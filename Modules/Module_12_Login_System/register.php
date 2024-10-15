@@ -1,3 +1,38 @@
+<?php
+
+    include("connection.php");
+    if($_SERVER['REQUEST_METHOD']=='POST'){
+        $username = $_POST['username'];
+        $password = password_hash($_POST['password'],PASSWORD_BCRYPT);
+
+        $sql = "SELECT * FROM users WHERE username = '$username'";
+        $result = mysqli_query($conn, $sql);
+        
+        if(mysqli_num_rows($result)>0){
+            echo "<script>alert('Username already exists')</script>";
+            echo "<script>window.location.href='index.php';</script>";
+
+        }
+        else{
+            $sql = "INSERT INTO users (username, password) VALUES ('$username', '$password')";
+            $result = mysqli_query($conn, $sql);
+
+            if($result){
+                echo "<script>alert('Registration successful')</script>";
+            echo "<script>window.location.href='index.php';</script>";
+
+            }
+            else{
+                echo "<script>alert('Failed to register')</script>";
+            echo "<script>window.location.href='register.php';</script>";
+
+            }
+        }
+
+    }
+
+?>
+
 <!doctype html>
 <html lang="en">
 
@@ -23,7 +58,7 @@
 
         <div class="row justify-content-evenly">
             <div class="col-md-4 bg-light p-md-4 rounded-4">
-                <form action="login.php" method="POST">
+                <form action="" method="POST">
                     <div class="row justify-content-center">
                         <div class="col-md-12">
                             <div class="form-group mb-3">

@@ -1,3 +1,63 @@
+<?php
+include("connection.php");
+session_start();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = $_POST["username"];
+    $password = $_POST["password"];
+
+    $sql = "SELECT * FROM users WHERE username = '$username'";
+    $result = mysqli_query($conn, $sql);
+
+    // Check if any user exists with the provided username
+    if (mysqli_num_rows($result) > 0) {
+        $user = mysqli_fetch_assoc($result);
+
+        if ($user['is_locked']) {
+            echo "<script>alert('Your account is locked. Please contact the administrator.');</script>";
+            echo "<script>window.location.href='index.php';</script>";
+            exit;
+        } else {
+            // Verify the password
+            if (password_verify($password, $user['password'])) {
+                $_SESSION['username'] = $username;
+                $_SESSION['logged_in'] = true;
+                $id = $user['id'];
+                
+                // Reset failed login attempts
+                $sql_fails = "UPDATE users SET failed_attempts = 0 WHERE id = '$id';";
+                mysqli_query($conn, $sql_fails);
+
+                echo "<script>window.location.href='welcome.php'</script>";
+            } else {
+                $id = $user['id'];
+                $failed_attempts = $user['failed_attempts'] + 1;
+
+                if ($failed_attempts >= 3) {
+                    // Lock the account after 3 failed attempts
+                    $sql_lock = "UPDATE users SET failed_attempts = '$failed_attempts', is_locked = 1 WHERE id = '$id';";
+                    mysqli_query($conn, $sql_lock);
+
+                    echo "<script>alert('Your account is locked. Please contact the administrator.');</script>";
+                    exit;
+                } else {
+                    // Update failed attempts
+                    $sql_update_fails = "UPDATE users SET failed_attempts = '$failed_attempts' WHERE id = '$id';";
+                    mysqli_query($conn, $sql_update_fails);
+
+                    echo "<script>alert('Invalid username or password. You have $failed_attempts attempts remaining.');</script>";
+                }
+            }
+        }
+    } else {
+        echo "<script>alert('User Not Found.');</script>";
+        echo "<script>window.location.href='index.php';</script>";
+        exit;
+    }
+}
+?>
+
+
 <!doctype html>
 <html lang="en">
 
@@ -23,7 +83,7 @@
 
         <div class="row justify-content-evenly">
             <div class="col-md-4 bg-light p-md-4 rounded-4">
-                <form action="login.php" method="POST">
+                <form action="" method="POST">
                     <div class="row justify-content-center">
                         <div class="col-md-12">
                             <div class="form-group mb-3">
@@ -47,7 +107,7 @@
                             <small>Not Registered? <a href="register.php">Register Now</a></small>
                         </div>
                         <div class="col-md-6 mt-md-2 p-md-3 text-center">
-                            <small><a href="register.php" >Forget Password</a></small>
+                            <small><a href="register.php">Forget Password</a></small>
                         </div>
 
                     </div>
