@@ -16,7 +16,9 @@ if(isset($_POST['submit'])){
     $result = mysqli_query($conn,$sql);
 
     if($result){
-        echo "<script>alert('Data Inserted Successfully'</script>";
+        echo "<script>alert('Data Inserted Successfully')</script>";
+        // echo "<script>alert('You have successfully inserted the data');</script>";
+        // echo "<script type='text/javascript'> document.location ='index.php'; </script>";
     }
     else{
         echo "<script>alert('Data Not Inserted')</script>";
