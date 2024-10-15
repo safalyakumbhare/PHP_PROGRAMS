@@ -9,7 +9,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "SELECT * FROM users WHERE username = '$username'";
     $result = mysqli_query($conn, $sql);
 
-    // Check if any user exists with the provided username
     if (mysqli_num_rows($result) > 0) {
         $user = mysqli_fetch_assoc($result);
 
@@ -18,13 +17,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "<script>window.location.href='index.php';</script>";
             exit;
         } else {
-            // Verify the password
             if (password_verify($password, $user['password'])) {
                 $_SESSION['username'] = $username;
                 $_SESSION['logged_in'] = true;
                 $id = $user['id'];
                 
-                // Reset failed login attempts
                 $sql_fails = "UPDATE users SET failed_attempts = 0 WHERE id = '$id';";
                 mysqli_query($conn, $sql_fails);
 
@@ -34,14 +31,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $failed_attempts = $user['failed_attempts'] + 1;
 
                 if ($failed_attempts >= 3) {
-                    // Lock the account after 3 failed attempts
                     $sql_lock = "UPDATE users SET failed_attempts = '$failed_attempts', is_locked = 1 WHERE id = '$id';";
                     mysqli_query($conn, $sql_lock);
 
                     echo "<script>alert('Your account is locked. Please contact the administrator.');</script>";
                     exit;
                 } else {
-                    // Update failed attempts
                     $sql_update_fails = "UPDATE users SET failed_attempts = '$failed_attempts' WHERE id = '$id';";
                     mysqli_query($conn, $sql_update_fails);
 
