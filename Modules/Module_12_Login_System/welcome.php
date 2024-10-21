@@ -22,7 +22,7 @@ if (!isset($_SESSION['logged_in'])) {
 <body>
 
 
-    <h1 class="text-center mt-5">Welcome, User!</h1>
+    <h1 class="text-center mt-5">Welcome,<?php echo $_SESSION['username']; ?></h1>
     <a href="logout.php" class="btn btn-danger mt-5">Logout</a>
 
 </body>
