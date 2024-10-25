@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AJAX Example</title>
+  </head>
+  <body>
+    <h1>AJAX Request Example</h1>
+    <button id="loadData">Load Data from Server</button>
+    <div id="result"></div>
+    <script>
+      document
+        .getElementById("loadData")
+        .addEventListener("click", function () {
+          let xhr = new XMLHttpRequest();
+          xhr.open("GET", "data.php", true);
+          xhr.onload = function () {
+            if (this.status === 200) {
+              document.getElementById("result").innerHTML = this.responseText;
+            }
+          };
+          xhr.send();
+        });
+    </script>
+  </body>
+</html>
